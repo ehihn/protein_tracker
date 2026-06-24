@@ -16,6 +16,8 @@ A minimal, single-page protein tracker that runs entirely in the browser — no 
 
 No installation, no accounts, no bs tracking apps.
 
+**[▶ Try it live](https://ehihn.github.io/protein_tracker/)**
+
 ## Customizing
 
 The goal and preset foods are hardcoded in the `<script>` block:
@@ -29,6 +31,4 @@ The goal and preset foods are hardcoded in the `<script>` block:
 
 Plain HTML, CSS, and vanilla JavaScript in a single file. No frameworks, no external requests.
 
-
-**[▶ Try it live](https://ehihn.github.io/protein_tracker/)**
 
