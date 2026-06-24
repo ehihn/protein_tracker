@@ -32,5 +32,5 @@ The goal and preset foods are hardcoded in the `<script>` block:
 Plain HTML, CSS, and vanilla JavaScript in a single file. No frameworks, no external requests.
 
 
-**[▶ Try it live](https://ehihn.github.io/protein_tracker/tracker.html)**
+**[▶ Try it live](https://ehihn.github.io/protein_tracker/)**
 
