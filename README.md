@@ -14,9 +14,7 @@ A minimal, single-page protein tracker that runs entirely in the browser — no 
 
 ## Usage
 
-Download `tracker.html` and open it in any browser. On mobile, you can add it to your home screen to use it like a standalone app.
-
-No installation, accounts, or internet connection required — all data stays in your browser's local storage.
+No installation, no accounts, no bs tracking apps.
 
 ## Customizing
 
