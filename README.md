@@ -1,7 +1,6 @@
 # Protein Tracker
 
-A minimal, single-page protein tracker that runs entirely in the browser — no build step, no dependencies, no backend. Just open `tracker.html`.
-
+A minimal, single-page protein tracker that runs entirely in the browser — no build step, no dependencies, no backend.
 ## Features
 
 - **Tap to add** — preset foods with common protein values
