@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Protein">
+<title>Protein Tracker</title>
+<style>
+  :root{
+    --bg:#f6f5f0; --surface:#ffffff; --surface2:#efedf5; --text:#1f1f1d; --text2:#6b6a64;
+    --text3:#9a988f; --border:rgba(0,0,0,0.12); --accent:#185fa5; --good:#0f6e56; --radius:12px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#1c1c1a; --surface:#262624; --surface2:#2f2f2c; --text:#f1efe8; --text2:#aeaca3;
+      --text3:#76746c; --border:rgba(255,255,255,0.14); --accent:#85b7eb; --good:#5dcaa5; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-tap-highlight-color:transparent;}
+  .wrap{max-width:560px; margin:0 auto; padding:16px;}
+  button{font-family:inherit; background:transparent; color:var(--text); border:0.5px solid var(--border);
+    border-radius:8px; padding:9px 12px; font-size:15px; cursor:pointer; transition:background .15s,transform .05s;}
+  button:hover{background:var(--surface2);} button:active{transform:scale(0.98);}
+  input{font-family:inherit; font-size:15px; padding:9px 11px; border:0.5px solid var(--border); border-radius:8px; background:var(--surface); color:var(--text);}
+  .hero{background:var(--surface2); border-radius:var(--radius); padding:16px 18px; margin-bottom:16px;}
+  .heroTop{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--text2);}
+  .bigrow{display:flex; align-items:baseline; gap:6px; margin:6px 0 10px;}
+  .big{font-size:32px; font-weight:500;}
+  .track{height:10px; background:var(--border); border-radius:999px; overflow:hidden;}
+  .fill{height:100%; width:0%; background:var(--accent); transition:width .2s;}
+  .lbl{font-size:14px; color:var(--text2); margin:0 0 8px;}
+  .grid2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;}
+  .foodbtn{flex-direction:column; align-items:flex-start; text-align:left; padding:12px; gap:2px; display:flex;}
+  .fname{font-size:14px; font-weight:500;} .fsub{font-size:12px; color:var(--text2);}
+  .logrow{display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; margin-bottom:8px;}
+  .muted{color:var(--text2);} .hint{color:var(--text3);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="heroTop"><span>Protein today</span><span>goal 150g</span></div>
+    <div class="bigrow"><span class="big" id="total">0</span><span style="font-size:16px;" class="muted">/ 150g</span><span style="font-size:14px; margin-left:auto;" id="remaining"></span></div>
+    <div class="track"><div class="fill" id="bar"></div></div>
+  </div>
+
+  <p class="lbl">Tap to add</p>
+  <div class="grid2" id="foods"></div>
+
+  <div style="margin-top:20px;">
+    <p class="lbl">Add something else</p>
+    <div style="display:flex; gap:8px;">
+      <input id="c-name" type="text" placeholder="food" style="flex:2; min-width:0;">
+      <input id="c-prot" type="number" placeholder="g" inputmode="numeric" style="flex:1; min-width:0;">
+      <button id="c-add" aria-label="Add">＋</button>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <p class="lbl" style="margin:0;">Today's log</p>
+      <button id="reset-btn" style="padding:5px 10px; font-size:13px;">↻ New day</button>
+    </div>
+    <div id="log"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var LS='protein_day_v1', GOAL=150;
+  var presets=[
+    {n:"Porridge + PB",p:15},
+    {n:"+ scoop in porridge",p:25},
+    {n:"2 eggs",p:12},
+    {n:"3 eggs",p:18},
+    {n:"Lunch protein (palm)",p:32},
+    {n:"Protein bar",p:10},
+    {n:"Dinner protein (palm)",p:35},
+    {n:"Protein shake",p:25},
+    {n:"Greek yogurt",p:15},
+    {n:"Tuna tin",p:25},
+    {n:"Cottage cheese (100g)",p:11},
+    {n:"Nuts (handful 30g)",p:6}
+  ];
+  function load(){try{var d=JSON.parse(localStorage.getItem(LS)); if(d&&d.date===new Date().toDateString())return d.items||[];}catch(e){} return [];}
+  function save(items){try{localStorage.setItem(LS,JSON.stringify({date:new Date().toDateString(),items:items}))}catch(e){}}
+  var items=load();
+
+  function render(){
+    var total=items.reduce(function(a,b){return a+b.p;},0);
+    document.getElementById("total").textContent=Math.round(total);
+    var pct=Math.min(100,Math.round(total/GOAL*100));
+    var bar=document.getElementById("bar"); bar.style.width=pct+"%";
+    var rem=GOAL-total, remEl=document.getElementById("remaining");
+    if(rem>0){ remEl.textContent=Math.round(rem)+"g to go"; remEl.style.color="var(--text2)"; bar.style.background="var(--accent)"; }
+    else { remEl.textContent="goal hit ✓"; remEl.style.color="var(--good)"; bar.style.background="var(--good)"; }
+    var log=document.getElementById("log");
+    if(!items.length){ log.innerHTML='<p class="hint" style="font-size:13px; margin:4px 0;">Nothing logged yet today.</p>'; return; }
+    log.innerHTML="";
+    items.forEach(function(it,idx){
+      var row=document.createElement("div"); row.className="logrow";
+      var left=document.createElement("span"); left.style.fontSize="14px"; left.textContent=it.n;
+      var right=document.createElement("span"); right.style.cssText="display:flex; align-items:center; gap:12px;";
+      var g=document.createElement("span"); g.style.cssText="font-size:14px; font-weight:500;"; g.textContent=Math.round(it.p)+"g";
+      var del=document.createElement("button"); del.textContent="✕"; del.setAttribute("aria-label","Remove"); del.style.cssText="width:30px; height:30px; padding:0; font-size:14px;";
+      del.onclick=function(){ items.splice(idx,1); save(items); render(); };
+      right.appendChild(g); right.appendChild(del);
+      row.appendChild(left); row.appendChild(right); log.appendChild(row);
+    });
+  }
+  function add(n,p){ items.push({n:n,p:p}); save(items); render(); }
+
+  var fc=document.getElementById("foods");
+  presets.forEach(function(f){
+    var b=document.createElement("button"); b.className="foodbtn";
+    b.innerHTML='<span class="fname">'+f.n+'</span><span class="fsub">'+f.p+'g protein</span>';
+    b.onclick=function(){ add(f.n,f.p); };
+    fc.appendChild(b);
+  });
+  document.getElementById("c-add").onclick=function(){
+    var n=document.getElementById("c-name").value.trim();
+    var p=parseFloat(document.getElementById("c-prot").value);
+    if(n && !isNaN(p) && p>0){ add(n,p); document.getElementById("c-name").value=""; document.getElementById("c-prot").value=""; }
+  };
+  document.getElementById("reset-btn").onclick=function(){ items=[]; save(items); render(); };
+  render();
+})();
+</script>
+</body>
+</html>
